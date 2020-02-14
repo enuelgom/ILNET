@@ -4,16 +4,19 @@ const Schema = mongoose.Schema;
 
 const  proyectos = new Schema({
     proyecto: String,
-    problematica: String,
-    justificacion: String,
-    objetivoG: String,
+    objetivo: String,
+    alcances: String,
+    metas: String,
+    avances: String,
+    status: String,
     alumnos: {
         type: [String],
         validate: [limit, 'exediste el limite']
     }
 });
+
 function limit(val){
-    return val.length <= 8;
+    return val.length <= 6;
 }
 
 export default proyectos;

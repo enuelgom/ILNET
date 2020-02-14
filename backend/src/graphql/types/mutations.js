@@ -2,29 +2,55 @@ export const mutations = `
 type Mutation{
     nuevoLab(
         nombre: String,
-        lugar: String,
-        direccion: String   
+        logo: String,
+        proyectos: String,
+        usuario: String,
+        clave: String
     ): String
 
     agregarProyecto(
         nombre: String,
         proyecto: String,
-        problematica: String,
-        justificacion: String,
-        objGen: String,
-        alumInt: String
+        objetivo: String,
+        alcances: String,
+        metas: String,
+        avances: String,
+        status: String,
+        alumnos: String
     ): String
 
     agregarAlumno(
-        proyecto: String,
-        nombre: String,
         alumno: String
-        a_pa: String,
-        a_ma: String,
+        ape_p: String,
+        ape_m: String,
+        correo: String,
+        telefono: String,
         institucion: String,
         Carrera: String,
         semestre_cursado: String,
         domicilio: String,
+        usuario: String,
+        clave: String
+    ): String
+
+    nuevoAdmin(
+        nombre: String,
+        usuario: String,
+        clave: String
+    ): String
+
+    solicitarProyecto(
+        nombre: String,
+        proyecto: String,
+    ): String
+
+    login(
+        usuario: String,
+        clave: String
+    ): String
+    
+    agregarLista(
+        elemento: String
     ): String
 }
 `

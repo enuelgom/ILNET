@@ -1,17 +1,30 @@
 export const custom = `
     type Laboratorio {
         nombre: String,
-        lugar: String,
+        logo: String,
         proyectos: [Proyecto],
-        direccion: String
+        usuario: String,
+        clave: String
     }
 
     type Proyecto {
-        nombre: String,
         proyecto: String,
-        problematica: String,
-        justificacion: String,
-        objGen: String,
-        alumInt: [String]
+        objetivo: String,
+        alcances: String,
+        metas: String,
+        avances: String,
+        status: String,
+        alumnos: [Alumnos]
+    }
+
+    type Alumnos{
+        alumno: String,
+        ape_p: String,
+        ape_m: String,
+        correo: String,
+        telefono: String,
+        institucion: String,
+        carrera: String,
+        domicilio: String
     }
 `

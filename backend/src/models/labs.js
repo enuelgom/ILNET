@@ -4,16 +4,14 @@ import proyectos from './proyectos';
 const Schema = mongoose.Schema;
 
 const  labsSchema = new Schema({
-    nombre: String,
-    ubicacion: String,
-    domicilio: String,
-    colonia: String,
-    ciudad: String,
-    correo: String,
-    Telefono: String,
-    RFC: String,
+    nombre: {
+        type: String,
+        unique: true
+    },
+    logo: String,
     proyectos: [proyectos],
-    direccion: String
+    usuario: String,
+    clave: String
 });
 
 const labs = mongoose.model('labs', labsSchema);
