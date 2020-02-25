@@ -6,12 +6,21 @@ const Schema = mongoose.Schema;
 const  labsSchema = new Schema({
     nombre: {
         type: String,
-        unique: true
+        required: true,
+        unique: true,
     },
-    logo: String,
+    logo: {
+        type: String
+    },
     proyectos: [proyectos],
-    usuario: String,
-    clave: String
+    usuario: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    clave: {
+        type: String
+    },
 });
 
 const labs = mongoose.model('labs', labsSchema);

@@ -10,8 +10,9 @@ export const custom = `
     type Proyecto {
         proyecto: String,
         objetivo: String,
-        alcances: String,
-        metas: String,
+        requerimientos: String,
+        perfiles: String,
+        habilidades: String,
         avances: String,
         status: String,
         alumnos: [Alumnos]
@@ -26,5 +27,25 @@ export const custom = `
         institucion: String,
         carrera: String,
         domicilio: String
+    }
+
+    type Segimiento{
+        Metodologia: String,
+        fases: [Fases]
+    }
+
+    type Fases{
+        fase: String,
+        actividades: [Actividades]
+    }
+
+    type Actividades{
+        actividad: String,
+        semanas: [Semanas],
+        status_actividad: String
+    }
+    type Semanas{
+        sem_ini: String,
+        sem_fin: String
     }
 `

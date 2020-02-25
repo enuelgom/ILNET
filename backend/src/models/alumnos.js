@@ -7,17 +7,19 @@ const  alumnosSchema = new Schema({
     ape_p: String,
     ape_m: String,
     correo: {
+        required: true,
         type: String,
         unique: true
     },
     telefono: {
-        type: String,
-        unique: true
+        type: String
     },
     institucion: String,
     carrera: String,
+    semestre_cursado: String,
     domicilio: String,
     usuario: {
+        required: true,
         type: String,
         unique: true
     },

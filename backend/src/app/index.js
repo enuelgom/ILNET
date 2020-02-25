@@ -2,10 +2,19 @@ import {ApolloServer} from 'apollo-server-express';
 import express from 'express';
 import { resolvers, typeDefs } from "../graphql";
 import http, { createServer } from "http";
+import { router } from "../routes";
+import cors from "cors"
+import bodyParser from "body-parser"
 
-const HOST = "192.168.1.87";
+
+const HOST = "192.168.1.103";
 const PORT = "3000";
 const app = express();
+
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded(({extended: true})));
+app.use(router);
 
 const server = new ApolloServer({
     typeDefs,
@@ -22,6 +31,7 @@ const server = new ApolloServer({
             }
         }
     },
+    
     subscriptions: {
         onConnect: (connectionParams, webSocket, context) => {
             const token = connectionParams['Authorization'];

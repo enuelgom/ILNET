@@ -9,11 +9,11 @@ type Mutation{
     ): String
 
     agregarProyecto(
-        nombre: String,
         proyecto: String,
         objetivo: String,
-        alcances: String,
-        metas: String,
+        requerimientos: String,
+        perfiles: String,
+        habilidades: String,
         avances: String,
         status: String,
         alumnos: String
@@ -26,7 +26,7 @@ type Mutation{
         correo: String,
         telefono: String,
         institucion: String,
-        Carrera: String,
+        carrera: String,
         semestre_cursado: String,
         domicilio: String,
         usuario: String,
@@ -52,5 +52,20 @@ type Mutation{
     agregarLista(
         elemento: String
     ): String
+
+    asignarAvance(
+        laboratorio: String,
+        proyecto: String,
+
+        metodologia: String,
+        fase: String,
+        actividad0: String,
+        actividad1: String,
+        actividad2: String,
+        actividad3: String,
+        actividad4: String
+    ): String
+
+    logOut: String
 }
 `
