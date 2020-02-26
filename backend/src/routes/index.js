@@ -3,6 +3,6 @@ import { filesRoutes } from "./subirImagen";
 
 const router = Router();
 
-router.use('/api/subirImagen',filesRoutes);
+router.use('/api/logos',filesRoutes);
 
 export {router};

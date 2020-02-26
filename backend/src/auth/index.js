@@ -1,6 +1,5 @@
 import "@babel/polyfill";
 import jwt from 'jsonwebtoken';
-import { blackList } from "../models/blackList";
 
 const verifyExp = (token) => {
     const decoded = jwt.decode(token);
@@ -15,4 +14,4 @@ const verifyExp = (token) => {
     }
 }
 
-export { verifyExp};
+export {verifyExp};

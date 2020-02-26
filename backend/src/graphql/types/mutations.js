@@ -16,6 +16,7 @@ type Mutation{
         habilidades: String,
         avances: String,
         status: String,
+        numAlu: String,
         alumnos: String
     ): String
 
@@ -56,7 +57,6 @@ type Mutation{
     asignarAvance(
         laboratorio: String,
         proyecto: String,
-
         metodologia: String,
         fase: String,
         actividad0: String,
@@ -64,6 +64,21 @@ type Mutation{
         actividad2: String,
         actividad3: String,
         actividad4: String
+    ): String
+
+        
+    actualizarALumno(
+        alumno: String
+        ape_p: String,
+        ape_m: String,
+        correo: String,
+        telefono: String,
+        institucion: String,
+        carrera: String,
+        semestre_cursado: String,
+        domicilio: String,
+        usuario: String,
+        clave: String
     ): String
 
     logOut: String

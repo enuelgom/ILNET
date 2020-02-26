@@ -5,9 +5,10 @@ export const queries = `
         oneLab(
             nombre: String
         ): Laboratorio
+        
         proyecto(
             nombre: String
             proyecto: String
-        ): Laboratorio
+        ): Proyecto
     }
-`   
+`

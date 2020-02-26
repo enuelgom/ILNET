@@ -21,24 +21,30 @@ const resolvers = {
     Query: {
         async allLabs(root, args, context){
             const _allLabs = await labs.find();
+
             return _allLabs;
         },
 
         async oneLab(root,args, context){
             const {nombre} = args;
             const _oneLab = await labs.where({nombre}).findOne();
+            _oneLab.proyectos.length;
+            console.log(_oneLab);
             return _oneLab;
         },
 
         async proyecto(root,args,context){
             const {nombre, proyecto} = args;
-            const _onepro = await labs.where({nombre}).findOne();
-            let res;
+            const _onepro = await labs.findOne({nombre});
+            let _proyecto = {};
             for (let val of _onepro.proyectos) {
-                if ((val["proyecto"] == proyecto)) {
-                    console.log (_onepro+val);
+                if (val.proyecto===proyecto) {
+                    _proyecto=val;
+                    console.log(_proyecto)
+                    
                 }
             }
+            return _proyecto
         }
     },
 
@@ -103,14 +109,17 @@ const resolvers = {
             const  token  = context.token;
             const _blacklist = await blackList.find({token}).findOne();
             if (!context.token || verifyExp(token) || !_blacklist=="") return "Tu sesion ha expirado";
-            const {nombre, logo, usuario } = args;
+            const {nombre, usuario } = args;
             let {clave} = args;
-            let log = "";
             const passHashed = await bcrypt.hash(clave, 10);
             clave = passHashed;
+
+            if (await labs.where({nombre: nombre}).findOne()) {
+                return "Laboratorio existente"
+            }
             try {
-                await new labs({ nombre, logo: log, usuario, clave }).save();
-                return "guardado";
+                await new labs({ nombre, usuario, clave }).save();
+                return "Laboratorio registrado";
             } catch (error) {
                 return "El usuario ya existe";
             }
@@ -124,23 +133,23 @@ const resolvers = {
                 if (!context.token || verifyExp(token) || !_blacklist==""){
                     return "Tu sesion ha expirado";
                 }
-                const {proyecto, objetivo, requerimientos, habilidades, perfiles} = args;
+                const {proyecto, objetivo, requerimientos, habilidades, perfiles, numAlu} = args;
                 const status = "Nuevo"
                 const usuario = decoded["usuario"];
                 const laboratorio = await labs.where({usuario: usuario}).findOneAndUpdate()
                 console.log(laboratorio);
                 for (let val of laboratorio.proyectos){
                     if(val.proyecto == proyecto){
-                        return "Proyecto ya registrado";
+                        return "Nombre del priyecto existente";
 
                     }else{
-                        laboratorio.proyectos.unshift({ proyecto, objetivo, requerimientos, perfiles, habilidades,  status });
+                        laboratorio.proyectos.unshift({ proyecto, objetivo, requerimientos, perfiles, habilidades,  status, numAlu });
                         laboratorio.save();
                         return "Proyecto registrado";
                     }
                 }
                 if (laboratorio.proyectos=="") {
-                    laboratorio.proyectos.unshift({ proyecto, objetivo, requerimientos, perfiles, habilidades, status });
+                    laboratorio.proyectos.unshift({ proyecto, objetivo, requerimientos, perfiles, habilidades, status, numAlu });
                     laboratorio.save();
                     return "Proyecto registrado";
                 }
@@ -167,7 +176,30 @@ const resolvers = {
                 }
                 await new alumnos ({ alumno, ape_p, ape_m, correo, telefono, institucion, carrera, semestre_cursado, domicilio, usuario, clave }).save();
                 return "Usuario registrado";
-            } catch (error) {     
+            } catch (error) {
+                return error;
+            }
+        },
+
+        async actualizarALumno(root, args, context){
+            // const token = context.token;
+            // const _blacklist = await blackList.find({token}).findOne();
+            // if (!context.token || verifyExp(token) || !_blacklist=="") return "Tu sesion ha expirado";
+            const { alumno, ape_p, ape_m, correo, telefono, institucion, carrera, semestre_cursado, domicilio, usuario } = args;
+            // let {clave} = args
+            // const passHashed = await bcrypt.hash(clave,10);
+            // clave = passHashed;
+            const decoded = jwt.decode(context.token, SECRET);
+            let user = decoded["usuario"];
+            try {
+                let _alumno=["alumno", "ape_p", "ape_m", "correo", "telefono", "institucion", "carrera", "semestre_cursado", "domicilio"];
+                
+                const Alumno = await alumnos.where({"usuario": user}).findOneAndUpdate();
+                for (let val of _alumno) Alumno[val]=args[val]
+                await Alumno.save();
+                return "ACTUALIZADO";
+
+            } catch (error) {
                 return error;
             }
         },
@@ -189,21 +221,26 @@ const resolvers = {
         },
 
         async solicitarProyecto(root, args, context){
+
             const  token  = context.token;
             const _blacklist = await blackList.find({token}).findOne();
             if (!context.token || verifyExp(token) || !_blacklist=="") return "Tu sesion ha expirado";
-            const decoded = jwt.decode(context.token, SECRET);            
+            const decoded = jwt.decode(context.token, SECRET);  
             const { nombre, proyecto} = args;
-            const laboratorio = await labs.where().findOneAndUpdate();
-            for (let val of laboratorio.proyectos) {
-                if (val["proyecto"] == proyecto){
-                    val.alumnos.push(decoded["usuario"]);
-                    
+            const alumno = decoded["usuario"];
+            const alum = await alumnos.where({usuario:alumno}).findOne();
+            const laboratorio = await labs.where({nombre:nombre}).findOneAndUpdate();
+
+            for (let val of laboratorio.proyectos) 
+            {
+                if (val.proyecto == proyecto){
+                    val.alumnos.push(alum._id);
                 }
             }
+
             await laboratorio.save();
             return "hola";
-        },    
+        },
         
         async asignarAvance(root, args, context){
 

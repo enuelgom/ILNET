@@ -11,6 +11,7 @@ const  proyectos = new Schema({
     habilidades: String,
     avances: [String],
     status: String,
+    numAlu: String,
     alumnos: {
         type: [String],
         validate: [limit, 'exediste el limite']

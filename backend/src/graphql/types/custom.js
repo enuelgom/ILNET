@@ -15,6 +15,7 @@ export const custom = `
         habilidades: String,
         avances: String,
         status: String,
+        numAlu: String,
         alumnos: [Alumnos]
     }
 
