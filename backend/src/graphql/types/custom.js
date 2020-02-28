@@ -49,4 +49,13 @@ export const custom = `
         sem_ini: String,
         sem_fin: String
     }
+    
+    type _alumnos{
+        nombre: String,
+        institucion: String
+    }
+    type count{
+        nombre: String,
+        count: String
+    }
 `

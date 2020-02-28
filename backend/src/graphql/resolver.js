@@ -7,6 +7,7 @@ import { PubSub } from "graphql-subscriptions";
 import bcrypt from "bcrypt";
 import blackList from "../models/blackList";
 import { verifyExp } from "../auth/index";
+import { loadavg } from "os";
 
 const  SECRET = fs.readFileSync("src/private.key");
 const pubsub = new PubSub();
@@ -21,8 +22,10 @@ const resolvers = {
     Query: {
         async allLabs(root, args, context){
             const _allLabs = await labs.find();
-
             return _allLabs;
+
+            
+
         },
 
         async oneLab(root,args, context){
@@ -45,6 +48,47 @@ const resolvers = {
                 }
             }
             return _proyecto
+        },
+
+        async alumnos(root, args, context){
+
+            
+            const{nombre, proyecto}= args;
+            const laboratorio = await labs.findOne({nombre});
+            let _proyecto = {};
+            for (let val of laboratorio.proyectos) {
+                if (val.proyecto===proyecto) {
+                    _proyecto=val;
+                }
+            }
+            
+            let nombres=[];
+            // let ids_alumnos = _proyecto.alumnos;
+            
+            for(let val of _proyecto.alumnos){
+                const nombreAlumno = await alumnos.findOne({_id: val});
+                nombres.push({nombre:nombreAlumno.alumno+" "+nombreAlumno.ape_p+" "+nombreAlumno.ape_m, institucion: nombreAlumno.institucion});
+                console.log(nombres);
+            }
+            
+            // for(let i=0; i<ids_alumnos.length; i++){
+                // const nombreAlumno = await alumnos.findOne({_id: ids_alumnos[i]});
+                // nombres.push(nombreAlumno.alumno+" "+nombreAlumno.ape_p+" "+nombreAlumno.ape_m);
+                // console.log(nombres);
+            // }
+// 
+            return nombres;
+        },
+        async Count(root, args, context){
+            const laboratorios = await labs.find();
+            
+                        
+            let _count=[];
+            for(let val of laboratorios){
+                console.log(val.proyectos.length)
+                _count.push({nombre:val.nombre, count: ""+val.proyectos.length});
+            }
+            return _count;
         }
     },
 
@@ -66,7 +110,7 @@ const resolvers = {
                     if (await bcrypt.compare(clave,adm.clave)) {
                         const typeUser = "0";
                         const nombre = adm.nombre
-                        return jwt.sign({ usuario, nombre, typeUser}, SECRET, { expiresIn: '24h' })
+                        return jwt.sign({ usuario, nombre, typeUser}, SECRET, { expiresIn: '5h' })
                     }else{
                         return "Contraseña incorrecta";
                     }
@@ -75,7 +119,7 @@ const resolvers = {
                     if (await bcrypt.compare(clave,lab.clave)) {
                         const typeUser = "1";
                         const nombre = lab.nombre
-                        return jwt.sign({ usuario, nombre, typeUser}, SECRET, { expiresIn: '24h' })
+                        return jwt.sign({ usuario, nombre, typeUser}, SECRET, { expiresIn: '5h' })
                     }else{
                         return "Contraseña incorrecta"
                     }
@@ -85,8 +129,7 @@ const resolvers = {
                     if (await bcrypt.compare(clave, alumno.clave)) {
                         const typeUser = "2";
                         const nombre = alumno.alumno+" "+alumno.ape_p+" "+alumno.ape_m;
-                        return jwt.sign({ usuario, nombre, typeUser}, SECRET, { expiresIn: '24h' })
-
+                        return jwt.sign({ usuario, nombre, typeUser}, SECRET, { expiresIn: '2h' })
                     }else{
                         return "Contraseña incorrecta"
                     }
@@ -231,9 +274,8 @@ const resolvers = {
             const alum = await alumnos.where({usuario:alumno}).findOne();
             const laboratorio = await labs.where({nombre:nombre}).findOneAndUpdate();
 
-            for (let val of laboratorio.proyectos) 
-            {
-                if (val.proyecto == proyecto){
+            for (let val of laboratorio.proyectos) {
+                if (val["proyecto"] == proyecto){
                     val.alumnos.push(alum._id);
                 }
             }
@@ -256,4 +298,5 @@ const resolvers = {
         }
     }
 }
+
 export default resolvers;

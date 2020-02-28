@@ -1,4 +1,5 @@
 import mongoose from '../db/connections';
+
 // import Avances from "../models/avances";
 
 const Schema = mongoose.Schema;
@@ -12,13 +13,13 @@ const  proyectos = new Schema({
     avances: [String],
     status: String,
     numAlu: String,
-    alumnos: {
-        type: [String],
-        validate: [limit, 'exediste el limite']
-    }
+    alumnos:{
+     type: [String],
+        // validate: [limit, 'exediste el limite']
+     }
 });
-function limit(val){
-    return val.length <= 6;
-}
+// function limit(val){
+    // return val.length <= 6;
+// }
 
 export default proyectos;

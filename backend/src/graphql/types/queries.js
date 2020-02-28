@@ -10,5 +10,12 @@ export const queries = `
             nombre: String
             proyecto: String
         ): Proyecto
+
+        alumnos(
+            nombre: String
+            proyecto: String
+        ): [_alumnos]
+
+        Count: [count]
     }
 `
