@@ -2,6 +2,12 @@ import mongoose from '../db/connections';
 
 const Schema = mongoose.Schema;
 
+let solicitud= {
+    nombre: String,
+    proyecto: String,
+    _status: String
+}
+
 const  alumnosSchema = new Schema({
     alumno: String,
     ape_p: String,
@@ -18,6 +24,7 @@ const  alumnosSchema = new Schema({
     carrera: String,
     semestre_cursado: String,
     domicilio: String,
+    solicitudes: [solicitud],
     usuario: {
         required: true,
         type: String,

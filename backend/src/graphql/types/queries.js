@@ -1,6 +1,6 @@
 export const queries = `
     type Query {
-        allLabs: [Laboratorio]
+        allLabs: [allLabsCount]
 
         oneLab(
             nombre: String
@@ -17,5 +17,9 @@ export const queries = `
         ): [_alumnos]
 
         Count: [count]
+
+        solicitudes(
+            nombre: String
+        ): [Solicitudes]
     }
 `

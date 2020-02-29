@@ -22,17 +22,19 @@ const resolvers = {
     Query: {
         async allLabs(root, args, context){
             const _allLabs = await labs.find();
-            return _allLabs;
+            // return _allLabs;
 
-            
+            let _count=[];
+            for(let val of _allLabs){
+                _count.push({nombre:val.nombre, count: ""+val.proyectos.length});
+            }
+            return _count;
 
         },
 
         async oneLab(root,args, context){
             const {nombre} = args;
             const _oneLab = await labs.where({nombre}).findOne();
-            _oneLab.proyectos.length;
-            console.log(_oneLab);
             return _oneLab;
         },
 
@@ -43,8 +45,6 @@ const resolvers = {
             for (let val of _onepro.proyectos) {
                 if (val.proyecto===proyecto) {
                     _proyecto=val;
-                    console.log(_proyecto)
-                    
                 }
             }
             return _proyecto
@@ -52,10 +52,9 @@ const resolvers = {
 
         async alumnos(root, args, context){
 
-            
             const{nombre, proyecto}= args;
             const laboratorio = await labs.findOne({nombre});
-            let _proyecto = {};
+            let _proyecto = [];
             for (let val of laboratorio.proyectos) {
                 if (val.proyecto===proyecto) {
                     _proyecto=val;
@@ -63,12 +62,10 @@ const resolvers = {
             }
             
             let nombres=[];
-            // let ids_alumnos = _proyecto.alumnos;
-            
             for(let val of _proyecto.alumnos){
-                const nombreAlumno = await alumnos.findOne({_id: val});
+                const nombreAlumno = await alumnos.findOne({_id: val._id});
                 nombres.push({nombre:nombreAlumno.alumno+" "+nombreAlumno.ape_p+" "+nombreAlumno.ape_m, institucion: nombreAlumno.institucion});
-                console.log(nombres);
+
             }
             
             // for(let i=0; i<ids_alumnos.length; i++){
@@ -79,16 +76,27 @@ const resolvers = {
 // 
             return nombres;
         },
+
         async Count(root, args, context){
             const laboratorios = await labs.find();
             
                         
             let _count=[];
             for(let val of laboratorios){
-                console.log(val.proyectos.length)
                 _count.push({nombre:val.nombre, count: ""+val.proyectos.length});
             }
             return _count;
+        },
+
+        async solicitudes(root, args, context){
+            const {nombre} = args;
+            const laboratorio = await labs.findOne({nombre});
+            
+
+            for(let val of laboratorio.proyectos){
+                console.log(val.proyecto)
+            }
+            
         }
     },
 
@@ -119,7 +127,8 @@ const resolvers = {
                     if (await bcrypt.compare(clave,lab.clave)) {
                         const typeUser = "1";
                         const nombre = lab.nombre
-                        return jwt.sign({ usuario, nombre, typeUser}, SECRET, { expiresIn: '5h' })
+                        const id_user = lab._id
+                        return jwt.sign({ usuario, nombre, typeUser, }, SECRET, { expiresIn: '5h' })
                     }else{
                         return "Contraseña incorrecta"
                     }
@@ -264,23 +273,30 @@ const resolvers = {
         },
 
         async solicitarProyecto(root, args, context){
-
             const  token  = context.token;
             const _blacklist = await blackList.find({token}).findOne();
+
             if (!context.token || verifyExp(token) || !_blacklist=="") return "Tu sesion ha expirado";
-            const decoded = jwt.decode(context.token, SECRET);  
+            
+            const decoded = jwt.decode(context.token, SECRET);
             const { nombre, proyecto} = args;
             const alumno = decoded["usuario"];
-            const alum = await alumnos.where({usuario:alumno}).findOne();
+
+            const alum = await alumnos.where({usuario:alumno}).findOneAndUpdate();
             const laboratorio = await labs.where({nombre:nombre}).findOneAndUpdate();
 
             for (let val of laboratorio.proyectos) {
                 if (val["proyecto"] == proyecto){
-                    val.alumnos.push(alum._id);
+                    val.alumnos.push({_id: alum._id, status: "espera"});
                 }
             }
+            console.log(alum)
+            const _status = "espera";
+            alum.solicitudes.push({nombre,proyecto,_status});
+            
+             await laboratorio.save();
+             await alum.save();
 
-            await laboratorio.save();
             return "hola";
         },
         

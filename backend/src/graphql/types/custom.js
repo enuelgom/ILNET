@@ -16,7 +16,8 @@ export const custom = `
         avances: String,
         status: String,
         numAlu: String,
-        alumnos: [Alumnos]
+        alumnos: [_ids],
+        notificaciones: String
     }
 
     type Alumnos{
@@ -52,10 +53,27 @@ export const custom = `
     
     type _alumnos{
         nombre: String,
-        institucion: String
+        institucion: String,
+
     }
+
     type count{
         nombre: String,
         count: String
+    }
+
+    type allLabsCount{
+        nombre: String,
+        count: String
+    }
+
+    type _ids{
+        _id: String,
+        status: String
+    }
+
+    type Solicitudes{
+        alumno: String,
+        proyecto: String
     }
 `
