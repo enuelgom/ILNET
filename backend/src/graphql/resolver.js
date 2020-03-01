@@ -33,9 +33,24 @@ const resolvers = {
         },
 
         async oneLab(root,args, context){
-            const {nombre} = args;
+            const {nombre, proyectoCategoria} = args;
             const _oneLab = await labs.where({nombre}).findOne();
-            return _oneLab;
+            let cat = "" 
+            switch (proyectoCategoria) {
+                case "Nuevos proyectos": cat ="Nuevo"; break;
+                case "Proyectos en catalogo": cat = "aceptado"; break;
+                case "Proyectos en desarrollo": cat = "desarrollo"; break;
+                case "Proyectos finalizados": cat = "finalizados"; break;
+                default: return "tas perdido compa";
+            }
+            let categoria = [];
+            for(let val of _oneLab.proyectos){
+                console.log(val)
+                if(val.status===cat){
+                    categoria.push(val);
+                }
+            }
+            return categoria;
         },
 
         async proyecto(root,args,context){
@@ -52,29 +67,28 @@ const resolvers = {
 
         async alumnos(root, args, context){
 
-            const{nombre, proyecto}= args;
-            const laboratorio = await labs.findOne({nombre});
-            let _proyecto = [];
-            for (let val of laboratorio.proyectos) {
-                if (val.proyecto===proyecto) {
-                    _proyecto=val;
+            try {
+                
+                const{nombre, proyecto, status}= args;
+                const laboratorio = await labs.findOne({nombre});
+                let _proyecto = [];
+                for (let val of laboratorio.proyectos) {
+                    if (val.proyecto===proyecto) {
+                        _proyecto=val;
+                    }
                 }
+                
+                let nombres=[];
+                for(let val of _proyecto.alumnos){
+                    if(val.status===status){
+                        const nombreAlumno = await alumnos.findOne({_id: val._id});
+                        nombres.push({nombre:nombreAlumno.alumno+" "+nombreAlumno.ape_p+" "+nombreAlumno.ape_m, institucion: nombreAlumno.institucion, carrera: nombreAlumno.carrera, telefono:nombreAlumno.telefono, correo: nombreAlumno.correo,_id:nombreAlumno._id });
+                    }
+                }x
+                return nombres;
+            } catch (error) {
+                
             }
-            
-            let nombres=[];
-            for(let val of _proyecto.alumnos){
-                const nombreAlumno = await alumnos.findOne({_id: val._id});
-                nombres.push({nombre:nombreAlumno.alumno+" "+nombreAlumno.ape_p+" "+nombreAlumno.ape_m, institucion: nombreAlumno.institucion});
-
-            }
-            
-            // for(let i=0; i<ids_alumnos.length; i++){
-                // const nombreAlumno = await alumnos.findOne({_id: ids_alumnos[i]});
-                // nombres.push(nombreAlumno.alumno+" "+nombreAlumno.ape_p+" "+nombreAlumno.ape_m);
-                // console.log(nombres);
-            // }
-// 
-            return nombres;
         },
 
         async Count(root, args, context){
@@ -273,6 +287,7 @@ const resolvers = {
         },
 
         async solicitarProyecto(root, args, context){
+            console.log("entraste wey")
             const  token  = context.token;
             const _blacklist = await blackList.find({token}).findOne();
 
@@ -299,6 +314,23 @@ const resolvers = {
 
             return "hola";
         },
+
+        async aceptarSolicitud(root, args, context){
+            const {nombre, proyecto, _id, accion} = args;
+
+            const laboratorio = await labs.where({nombre}).findOneAndUpdate();
+            for(let val of laboratorio.proyectos){
+                if(val.proyecto === proyecto){
+                    for(let val2 of val.alumnos){
+                        if(val2._id===_id){
+                            val2.status=accion;
+                        }
+                    }
+                }
+            }
+            await laboratorio.save();
+            return "hecho..."
+        },
         
         async asignarAvance(root, args, context){
 
@@ -311,6 +343,18 @@ const resolvers = {
                 }
             }
 
+        },
+
+        async aceptarNuevoProyecto(root, args, context){
+            const {nombre, proyecto} = args;
+            const accion = "aceptado"
+            const laboratorio = await labs.where({nombre}).findOneAndUpdate();
+            for (let val of laboratorio.proyectos) {
+                if(val.proyecto === proyecto){
+                    val.status=accion;
+                }
+            }
+            await laboratorio.save();
         }
     }
 }

@@ -20,6 +20,13 @@ export const custom = `
         notificaciones: String
     }
 
+    type Categorias{
+        proyecto: String,
+        objetivo: String,
+        status: String,
+        numAlu: String,
+    }
+
     type Alumnos{
         alumno: String,
         ape_p: String,
@@ -54,7 +61,10 @@ export const custom = `
     type _alumnos{
         nombre: String,
         institucion: String,
-
+        carrera: String,
+        telefono: String,
+        correo: String,
+        _id: String
     }
 
     type count{

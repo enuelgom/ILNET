@@ -3,8 +3,9 @@ export const queries = `
         allLabs: [allLabsCount]
 
         oneLab(
-            nombre: String
-        ): Laboratorio
+            nombre: String,
+            proyectoCategoria: String
+        ): [Proyecto]
         
         proyecto(
             nombre: String
@@ -14,6 +15,7 @@ export const queries = `
         alumnos(
             nombre: String
             proyecto: String
+            status: String
         ): [_alumnos]
 
         Count: [count]

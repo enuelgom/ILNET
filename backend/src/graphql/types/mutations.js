@@ -82,5 +82,18 @@ type Mutation{
     ): String
 
     logOut: String
+    
+    aceptarSolicitud(
+        nombre: String,
+        proyecto: String,
+        _id: String,
+        accion: String
+    ): String
+
+    aceptarNuevoProyecto(
+        nombre: String,
+        proyecto: String
+    ): String
+    
 }
 `
