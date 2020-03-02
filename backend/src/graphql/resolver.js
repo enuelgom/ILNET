@@ -26,7 +26,14 @@ const resolvers = {
 
             let _count=[];
             for(let val of _allLabs){
-                _count.push({nombre:val.nombre, count: ""+val.proyectos.length});
+                let i=0;
+                for (let val2 of val.proyectos){
+                    if (val2.status === "Nuevo") {
+                        i++
+                    }
+                }
+                if(i===0){i="";}
+                _count.push({nombre:val.nombre, count: ""+val.proyectos.length, notificaciones: i});
             }
             return _count;
 
@@ -38,10 +45,10 @@ const resolvers = {
             let cat = "" 
             switch (proyectoCategoria) {
                 case "Nuevos proyectos": cat ="Nuevo"; break;
-                case "Proyectos en catalogo": cat = "aceptado"; break;
-                case "Proyectos en desarrollo": cat = "desarrollo"; break;
-                case "Proyectos finalizados": cat = "finalizados"; break;
-                default: return "tas perdido compa";
+                case "Proyectos en catalogo": cat = "Aceptado"; break;
+                case "Proyectos en desarrollo": cat = "En desarrollo"; break;
+                case "Proyectos finalizados": cat = "Finalizado"; break;
+                default: return "";
             }
             let categoria = [];
             for(let val of _oneLab.proyectos){
@@ -75,7 +82,7 @@ const resolvers = {
                 for (let val of laboratorio.proyectos) {
                     if (val.proyecto===proyecto) {
                         _proyecto=val;
-                    }
+                    } 
                 }
                 
                 let nombres=[];
@@ -84,7 +91,7 @@ const resolvers = {
                         const nombreAlumno = await alumnos.findOne({_id: val._id});
                         nombres.push({nombre:nombreAlumno.alumno+" "+nombreAlumno.ape_p+" "+nombreAlumno.ape_m, institucion: nombreAlumno.institucion, carrera: nombreAlumno.carrera, telefono:nombreAlumno.telefono, correo: nombreAlumno.correo,_id:nombreAlumno._id });
                     }
-                }x
+                }
                 return nombres;
             } catch (error) {
                 
@@ -287,7 +294,6 @@ const resolvers = {
         },
 
         async solicitarProyecto(root, args, context){
-            console.log("entraste wey")
             const  token  = context.token;
             const _blacklist = await blackList.find({token}).findOne();
 
@@ -302,11 +308,11 @@ const resolvers = {
 
             for (let val of laboratorio.proyectos) {
                 if (val["proyecto"] == proyecto){
-                    val.alumnos.push({_id: alum._id, status: "espera"});
+                    val.alumnos.push({_id: alum._id, status: "Nuevo"});
                 }
             }
             console.log(alum)
-            const _status = "espera";
+            const _status = "Nuevo";
             alum.solicitudes.push({nombre,proyecto,_status});
             
              await laboratorio.save();
@@ -346,8 +352,7 @@ const resolvers = {
         },
 
         async aceptarNuevoProyecto(root, args, context){
-            const {nombre, proyecto} = args;
-            const accion = "aceptado"
+            const {nombre, proyecto, accion} = args;
             const laboratorio = await labs.where({nombre}).findOneAndUpdate();
             for (let val of laboratorio.proyectos) {
                 if(val.proyecto === proyecto){

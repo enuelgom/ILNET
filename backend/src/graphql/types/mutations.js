@@ -92,7 +92,8 @@ type Mutation{
 
     aceptarNuevoProyecto(
         nombre: String,
-        proyecto: String
+        proyecto: String,
+        accion: String
     ): String
     
 }
