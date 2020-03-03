@@ -118,6 +118,12 @@ const resolvers = {
                 console.log(val.proyecto)
             }
             
+        },
+
+        async infoAlumno(root, args, context){
+            const {usuario} =args;
+            const alum= await alumnos.findOne({usuario});
+            return alum;
         }
     },
 
@@ -148,7 +154,6 @@ const resolvers = {
                     if (await bcrypt.compare(clave,lab.clave)) {
                         const typeUser = "1";
                         const nombre = lab.nombre
-                        const id_user = lab._id
                         return jwt.sign({ usuario, nombre, typeUser, }, SECRET, { expiresIn: '5h' })
                     }else{
                         return "Contraseña incorrecta"
@@ -255,22 +260,29 @@ const resolvers = {
         },
 
         async actualizarALumno(root, args, context){
-            // const token = context.token;
-            // const _blacklist = await blackList.find({token}).findOne();
-            // if (!context.token || verifyExp(token) || !_blacklist=="") return "Tu sesion ha expirado";
-            const { alumno, ape_p, ape_m, correo, telefono, institucion, carrera, semestre_cursado, domicilio, usuario } = args;
-            // let {clave} = args
-            // const passHashed = await bcrypt.hash(clave,10);
-            // clave = passHashed;
-            const decoded = jwt.decode(context.token, SECRET);
-            let user = decoded["usuario"];
+            const token = context.token;
+            const _blacklist = await blackList.find({token}).findOne();
+            if (!context.token || verifyExp(token) || !_blacklist=="") return "Tu sesion ha expirado";
+            let {_id} = args
+            let {clave} = args
+            const Clave = await bcrypt.hash(clave,10);
             try {
-                let _alumno=["alumno", "ape_p", "ape_m", "correo", "telefono", "institucion", "carrera", "semestre_cursado", "domicilio"];
-                
-                const Alumno = await alumnos.where({"usuario": user}).findOneAndUpdate();
-                for (let val of _alumno) Alumno[val]=args[val]
+                let _alumno=["alumno", "ape_p", "ape_m", "correo", "telefono", "institucion", "carrera", "semestre_cursado", "domicilio", "usuario"];
+                const Alumno = await alumnos.where({_id}).findOneAndUpdate();
+                for (let val of _alumno){
+                    if(args[val]!=""){
+                        Alumno[val]=args[val]
+                    }
+                }
+
+                if(clave!=""){
+                    Alumno["clave"]=Clave;
+                }
+                const typeUser = "2";
+                const nombre = Alumno.alumno+" "+Alumno.ape_p+" "+Alumno.ape_m;
+                const usuario= Alumno.usuario;
                 await Alumno.save();
-                return "ACTUALIZADO";
+                return jwt.sign({ usuario, nombre, typeUser}, SECRET, { expiresIn: '2h' })
 
             } catch (error) {
                 return error;

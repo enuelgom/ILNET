@@ -87,4 +87,18 @@ export const custom = `
         alumno: String,
         proyecto: String
     }
+
+    type infoAlumno{
+        _id: String,
+        alumno: String,
+        ape_p: String,
+        ape_m: String,
+        correo: String,
+        telefono: String,
+        institucion: String,
+        semestre_cursado: String,
+        carrera: String,
+        domicilio: String,
+        usuario: String
+    }
 `

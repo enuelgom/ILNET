@@ -68,6 +68,7 @@ type Mutation{
 
         
     actualizarALumno(
+        _id: String,
         alumno: String
         ape_p: String,
         ape_m: String,

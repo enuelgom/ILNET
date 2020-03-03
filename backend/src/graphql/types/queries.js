@@ -23,5 +23,9 @@ export const queries = `
         solicitudes(
             nombre: String
         ): [Solicitudes]
+
+        infoAlumno(
+            usuario: String
+        ): infoAlumno
     }
 `

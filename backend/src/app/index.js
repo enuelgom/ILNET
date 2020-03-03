@@ -18,7 +18,7 @@ app.use(router);
 
 const server = new ApolloServer({
     typeDefs,
-    resolvers, 
+    resolvers,
     context : async ({ req, connection }) => {
         if(connection){
             return connection.context;
