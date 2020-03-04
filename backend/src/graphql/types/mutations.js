@@ -5,7 +5,8 @@ type Mutation{
         logo: String,
         proyectos: String,
         usuario: String,
-        clave: String
+        clave: String,
+        tipoLaboratorio: String,
     ): String
 
     agregarProyecto(
@@ -95,6 +96,11 @@ type Mutation{
         nombre: String,
         proyecto: String,
         accion: String
+    ): String
+
+    cancelarSolicitudAlumno(
+        nombre: String,
+        proyecto: String
     ): String
     
 }

@@ -27,5 +27,7 @@ export const queries = `
         infoAlumno(
             usuario: String
         ): infoAlumno
+
+        misSolicitudes: [MisSolicitudes]
     }
 `

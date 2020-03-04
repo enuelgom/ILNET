@@ -8,6 +8,7 @@ import bcrypt from "bcrypt";
 import blackList from "../models/blackList";
 import { verifyExp } from "../auth/index";
 import { loadavg } from "os";
+import { valueFromAST } from "graphql";
 
 const  SECRET = fs.readFileSync("src/private.key");
 const pubsub = new PubSub();
@@ -52,7 +53,6 @@ const resolvers = {
             }
             let categoria = [];
             for(let val of _oneLab.proyectos){
-                console.log(val)
                 if(val.status===cat){
                     categoria.push(val);
                 }
@@ -109,21 +109,29 @@ const resolvers = {
             return _count;
         },
 
-        async solicitudes(root, args, context){
-            const {nombre} = args;
-            const laboratorio = await labs.findOne({nombre});
-            
-
-            for(let val of laboratorio.proyectos){
-                console.log(val.proyecto)
-            }
-            
-        },
-
         async infoAlumno(root, args, context){
             const {usuario} =args;
             const alum= await alumnos.findOne({usuario});
             return alum;
+        },
+
+        async misSolicitudes(root, args, context){
+            const  token  = context.token;
+            const decoded = jwt.decode(token, SECRET);
+            const alumno = await alumnos.findOne({usuario:decoded["usuario"]})
+            let misSolicitudes = [];
+            for(let val of alumno.solicitudes){
+                const laboratorio = await labs.findOne({nombre: val.nombre})
+                for(let val2 of laboratorio.proyectos){
+                    if(val2.proyecto === val.proyecto){
+                        if(alumno.status!="cancelado"){
+                            misSolicitudes.push({nombre: laboratorio.nombre, proyecto:val2.proyecto, status: val._status});
+                        }
+                    }
+                }
+                
+            }
+            return misSolicitudes;
         }
     },
 
@@ -187,7 +195,7 @@ const resolvers = {
             const  token  = context.token;
             const _blacklist = await blackList.find({token}).findOne();
             if (!context.token || verifyExp(token) || !_blacklist=="") return "Tu sesion ha expirado";
-            const {nombre, usuario } = args;
+            const {nombre, usuario, tipoLaboratorio } = args;
             let {clave} = args;
             const passHashed = await bcrypt.hash(clave, 10);
             clave = passHashed;
@@ -196,7 +204,7 @@ const resolvers = {
                 return "Laboratorio existente"
             }
             try {
-                await new labs({ nombre, usuario, clave }).save();
+                await new labs({ nombre, usuario, clave, tipoLaboratorio }).save();
                 return "Laboratorio registrado";
             } catch (error) {
                 return "El usuario ya existe";
@@ -215,7 +223,6 @@ const resolvers = {
                 const status = "Nuevo"
                 const usuario = decoded["usuario"];
                 const laboratorio = await labs.where({usuario: usuario}).findOneAndUpdate()
-                console.log(laboratorio);
                 for (let val of laboratorio.proyectos){
                     if(val.proyecto == proyecto){
                         return "Nombre del priyecto existente";
@@ -323,7 +330,6 @@ const resolvers = {
                     val.alumnos.push({_id: alum._id, status: "Nuevo"});
                 }
             }
-            console.log(alum)
             const _status = "Nuevo";
             alum.solicitudes.push({nombre,proyecto,_status});
             
@@ -372,6 +378,32 @@ const resolvers = {
                 }
             }
             await laboratorio.save();
+        },
+
+        async cancelarSolicitudAlumno(root, args, context){
+            const {nombre, proyecto} = args;
+
+            const  token  = context.token;
+            const decoded = jwt.decode(token, SECRET);
+            const alumno = await alumnos.where({usuario:decoded["usuario"]}).findOneAndUpdate()
+            for(let val of alumno.solicitudes){
+                if(val.proyecto === proyecto){
+                    val._status="cancelado";
+                }
+            }
+            await alumno.save();
+            const laboratorio = await labs.where({nombre}).findOneAndUpdate();
+            for(let val of laboratorio.proyectos){
+                if (val.proyecto===proyecto) {
+                    for(let val2 of val.alumnos){
+                        if(val2._id===alumno._id){
+                            val2.status="cancelado"
+                        }
+                    }
+                }
+            }
+            await laboratorio.save()
+            return "Hecho"
         }
     }
 }

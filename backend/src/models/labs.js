@@ -21,6 +21,7 @@ const  labsSchema = new Schema({
     clave: {
         type: String
     },
+    tipoLaboratorio: String,
 });
 
 const labs = mongoose.model('labs', labsSchema);

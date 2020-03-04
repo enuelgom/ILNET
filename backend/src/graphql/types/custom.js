@@ -101,4 +101,10 @@ export const custom = `
         domicilio: String,
         usuario: String
     }
+
+    type MisSolicitudes{
+        nombre: String,
+        proyecto: String,
+        status: String
+    }
 `
