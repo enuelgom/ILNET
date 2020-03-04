@@ -75,7 +75,8 @@ export const custom = `
     type allLabsCount{
         nombre: String,
         count: String,
-        notificaciones: String
+        notificaciones: String,
+        tipoLaboratorio: String,
     }
 
     type _ids{

@@ -34,7 +34,7 @@ const resolvers = {
                     }
                 }
                 if(i===0){i="";}
-                _count.push({nombre:val.nombre, count: ""+val.proyectos.length, notificaciones: i});
+                _count.push({nombre:val.nombre, count: ""+val.proyectos.length, notificaciones: i, tipoLaboratorio: val.tipoLaboratorio});
             }
             return _count;
 
