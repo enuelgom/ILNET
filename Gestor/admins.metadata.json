@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"Gestor.admins"},{"v":{"$numberInt":"2"},"unique":true,"key":{"usuario":{"$numberInt":"1"}},"name":"usuario_1","ns":"Gestor.admins","background":true}],"uuid":"9ab9c4fcee314a619ba7ea35971aa04e"}
