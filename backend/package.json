@@ -14,7 +14,7 @@
     "@babel/polyfill": "^7.8.3",
     "apollo-server-express": "^2.9.16",
     "bcrypt": "^3.0.8",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "graphql": "^14.6.0",
     "graphql-subscriptions": "^1.1.0",
     "graphql-tools": "^4.0.6",
